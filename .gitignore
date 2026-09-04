@@ -1,0 +1,33 @@
+# Secrets — never commit these
+.env
+.env.*
+*.key
+*.pem
+secrets.yaml
+config.local.*
+
+# Python
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# garak / PyRIT run artifacts (keep the write-up, not the raw dumps)
+garak_runs/
+*.report.jsonl
+*.report.html
+*.hitlog.jsonl
+runs/
+results/
+pyrit_outputs/
+*.db
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
