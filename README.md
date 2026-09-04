@@ -1,2 +1,2 @@
 # redteam-log
-orking log of AI red-teaming practice — scans, CTF attempts, OWASP↔ATLAS mapping
+Working log of AI red-teaming practice — scans, CTF attempts, OWASP↔ATLAS mapping
