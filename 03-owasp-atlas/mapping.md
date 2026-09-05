@@ -90,12 +90,16 @@ garak --model_type ollama --model_name llama3.2:3b --probes propile --generation
 
 **The class, in one sentence.** The risk isn't in what an attacker types to the model — it's in what got baked into the system before a single prompt was ever sent: a compromised base model, a poisoned dataset, a malicious fine-tune, or a tampered dependency in the ML stack.
 
-**ATLAS technique.** `AML.T0010` — AI Supply Chain Compromise, with four sub-techniques:
+**ATLAS technique.** `AML.T0010` — AI Supply Chain Compromise, with six sub-techniques:
 
 - `AML.T0010.000` — **Hardware**: the physical infrastructure the model trains or runs on is compromised.
 - `AML.T0010.001` — **AI Software**: the libraries, frameworks, or serialization formats in the ML stack itself carry a compromise (a classic example: a `.pkl` model file that executes arbitrary code on load, because Python's pickle format was never designed to be a safe way to distribute untrusted data).
 - `AML.T0010.002` — **Data**: the training or fine-tuning dataset is poisoned or tampered with before the model ever sees it.
 - `AML.T0010.003` — **Model**: a pretrained model itself — downloaded from a hub, forked from a base — is the compromised artifact, backdoored before it ever reaches you.
+- `AML.T0010.004` — **Container Registry**: the container images the model is packaged and shipped in are tampered with.
+- `AML.T0010.005` — **AI Agent Tool**: a tool an agent is wired to call is itself the compromised component — the newest sub-technique, and the one that matters most as agent deployments grow.
+
+*Note on the last two:* several published OWASP→ATLAS crosswalks still list only four sub-techniques here. `.004` and `.005` are current in the live matrix — `.005` in particular closes the gap between this class and agentic risk, and is worth watching as agent tool ecosystems (MCP servers, plugin registries) become a real distribution channel.
 
 **Why the distinction matters.** LLM01 and LLM02 are both *runtime* risks — something happens while the model is answering a live prompt. Supply chain risk is a *pre-runtime* risk: it's already decided by the time you type anything. That changes where the fix has to live. You cannot prompt-engineer your way out of a poisoned model or a backdoored dependency — by the time you're at the chat window, it's too late. This is also the class most people skip, because it doesn't feel like "AI security" in the way jailbreaking does — it looks like ordinary software supply chain hygiene, just applied to models and datasets instead of npm packages.
 
