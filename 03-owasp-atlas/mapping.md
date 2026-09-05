@@ -10,7 +10,7 @@ Sources to work from: the [OWASP GenAI Top 10](https://genai.owasp.org/llm-top-1
 |---|---|---|---|
 | LLM01 | Prompt Injection | AML.T0051 | ✅ worked example below |
 | LLM02 | Sensitive Information Disclosure | AML.T0024 | ✅ worked example below |
-| LLM03 | Supply Chain | | ☐ |
+| LLM03 | Supply Chain | AML.T0010 | ✅ worked example below |
 | LLM04 | Data and Model Poisoning | | ☐ |
 | LLM05 | Improper Output Handling | | ☐ |
 | LLM06 | Excessive Agency | | ☐ |
@@ -86,9 +86,36 @@ garak --model_type ollama --model_name llama3.2:3b --probes propile --generation
 
 ---
 
-## LLM03:2025 — Supply Chain
+## LLM03:2025 — Supply Chain · *worked example*
 
-*(same structure — copy the block above)*
+**The class, in one sentence.** The risk isn't in what an attacker types to the model — it's in what got baked into the system before a single prompt was ever sent: a compromised base model, a poisoned dataset, a malicious fine-tune, or a tampered dependency in the ML stack.
+
+**ATLAS technique.** `AML.T0010` — AI Supply Chain Compromise, with four sub-techniques:
+
+- `AML.T0010.000` — **Hardware**: the physical infrastructure the model trains or runs on is compromised.
+- `AML.T0010.001` — **AI Software**: the libraries, frameworks, or serialization formats in the ML stack itself carry a compromise (a classic example: a `.pkl` model file that executes arbitrary code on load, because Python's pickle format was never designed to be a safe way to distribute untrusted data).
+- `AML.T0010.002` — **Data**: the training or fine-tuning dataset is poisoned or tampered with before the model ever sees it.
+- `AML.T0010.003` — **Model**: a pretrained model itself — downloaded from a hub, forked from a base — is the compromised artifact, backdoored before it ever reaches you.
+
+**Why the distinction matters.** LLM01 and LLM02 are both *runtime* risks — something happens while the model is answering a live prompt. Supply chain risk is a *pre-runtime* risk: it's already decided by the time you type anything. That changes where the fix has to live. You cannot prompt-engineer your way out of a poisoned model or a backdoored dependency — by the time you're at the chat window, it's too late. This is also the class most people skip, because it doesn't feel like "AI security" in the way jailbreaking does — it looks like ordinary software supply chain hygiene, just applied to models and datasets instead of npm packages.
+
+**How to probe it.** This is the first class in the table where garak genuinely isn't the right tool — garak probes a model's *behavior* at inference time; it has no way to inspect where the model file came from or whether it was tampered with before you loaded it. The actual checks here are provenance and integrity, not prompting:
+
+- Verify model weights are distributed in `safetensors` format, not pickle (`.bin`/`.pt` via `pickle` can execute arbitrary code on load — `safetensors` is a data-only format that can't).
+- Check the model card / repo for a maintainer signature or published hash, and diff the hash of what you downloaded against it.
+- Run `pip-audit` (or equivalent) against the environment `garak` and `PyRIT` themselves sit in — the scanning tool's own dependency tree is part of your supply chain too.
+- For any dataset used in fine-tuning: know its source, and treat an unvetted scraped dataset the same way you'd treat unvetted code — read before you run.
+
+**Controls a governance team would actually write down.**
+
+- Maintain a model bill-of-materials (base model, version, source, training-data provenance) the same way software teams maintain an SBOM.
+- Pin and hash-verify model and dependency versions — no floating "latest" in anything that touches production inference.
+- Prefer `safetensors` over pickle-based checkpoints; treat any `.pkl`/`.bin` model file from an untrusted source as arbitrary code, not data.
+- Vet third-party fine-tunes and LoRA adapters before deployment — a fine-tune can reintroduce a backdoor a base model didn't have.
+
+**NIST AI RMF hook.** Sits under GOVERN (establishing who is accountable for vetting third-party models and data before they enter the pipeline) and MAP (understanding what's actually in the system's supply chain in the first place — you can't govern what you haven't mapped).
+
+**One line for a non-technical risk owner.** *"We don't just have to trust what the model says — we have to trust where the model came from, and most teams never check."*
 
 ---
 
