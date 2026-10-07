@@ -19,7 +19,7 @@ Sources to work from: the [OWASP GenAI Top 10](https://genai.owasp.org/llm-top-1
 | LLM09 | Misinformation | AML.T0062, AML.T0060 *(adversary half only)* | ✅ |
 | LLM10 | Unbounded Consumption | AML.T0029, AML.T0034 | ✅ |
 
-A note on versions: OWASP published a 2026 Top 10 on 6 August 2026 (reordered, with System Prompt Leakage renamed Hidden Context Exposure). This file stays on the 2025 numbering so the mappings above stay comparable; a 2026 crosswalk is next.
+A note on versions: OWASP published a 2026 Top 10 on 6 August 2026 (reordered, with System Prompt Leakage renamed Hidden Context Exposure). This file stays on the 2025 numbering so the mappings above stay comparable; a 2026 crosswalk is next. Risks that only exist once a model can act are mapped separately in [agentic-mapping.md](agentic-mapping.md) (OWASP Top 10 for Agentic Applications).
 
 ---
 
